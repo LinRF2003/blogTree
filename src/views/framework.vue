@@ -1,13 +1,16 @@
 <template>
   <div>
+    首页
     <router-view></router-view>
   </div>
 </template>
+
 <script>
 export default {
-  name: "App",
-};
+
+}
 </script>
-<style lang="scss">
-  
+
+<style scoped>
+
 </style>
