@@ -10,10 +10,8 @@ import requests from "@/utils/request";
 export default {
   methods: {
     async app() {
-      let r = await requests.get("test");
+      let r = await requests.post("test");
       console.log(r);
-      let q = await requests.post("login");
-      console.log(q);
     },
   },
 };

@@ -1,6 +1,6 @@
 <template>
-  <div> 
-    博客11
+  <div>
+    动态
   </div>
 </template>
 

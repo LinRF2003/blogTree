@@ -1,6 +1,6 @@
 <template>
-  <div> 
-    博客11
+  <div>
+    问答
   </div>
 </template>
 

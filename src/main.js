@@ -12,10 +12,10 @@ Vue.use(ElementUI);
 
 Vue.config.productionTip = false
 // 引入封装axios的请求
-import requests from "@/utils/request";
+import request from "@/utils/request";
 // 引入封装的message
 import message from '@/utils/message'
-Vue.prototype.$requests = requests
+Vue.prototype.$request = request
 Vue.prototype.$message = message
 
 import router from '@/router/index.js'

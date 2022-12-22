@@ -1,15 +1,10 @@
 <template>
-  <div> 
-    博客11
-  </div>
+  <div>分类专栏</div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
 <style scoped>
-
 </style>

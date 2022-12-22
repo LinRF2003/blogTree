@@ -2,7 +2,7 @@
   <div class="login">
     <div class="content">
       <div class="title">登录</div>
-      <el-form :model="formData" :rules="rules" ref="formData">
+      <el-form ref="formData" :model="formData" :rules="rules">
         <el-form-item prop="phone">
           <el-input
             placeholder="请输入手机号"
@@ -13,6 +13,9 @@
           <el-input
             placeholder="请输入密码"
             v-model="formData.password"
+            type="password"
+            show-password
+            @keyup.enter.native="login"
           ></el-input>
         </el-form-item>
 
@@ -32,6 +35,9 @@
 </template>
 
 <script>
+// token解析中间件
+import jwtDecode from "jwt-decode";
+// 引入路由
 import router from "@/router";
 export default {
   data() {
@@ -52,7 +58,7 @@ export default {
           },
           {
             pattern: /^1[3456789]\d{9}$/,
-            message: "手机号码格式不正确",
+            message: "手机号码不正确",
           },
         ],
         password: [
@@ -63,13 +69,14 @@ export default {
           {
             min: 6,
             max: 20,
-            message: "密码在6-20位之间",
+            message: "密码在6 - 20位之间",
           },
         ],
       },
     };
   },
   methods: {
+    // 登录
     login() {
       // this.$refs.updateFrom.
       this.$refs["formData"].validate(async (valid) => {
@@ -79,7 +86,7 @@ export default {
 
         const contentType = "application/x-www-form-urlencoded";
 
-        let result = await this.$requests({
+        let result = await this.$request({
           url: "/login",
           method: "post",
           data: {
@@ -89,6 +96,28 @@ export default {
         });
 
         if (result.data.status === 0) {
+          const token = result.data.token;
+          // 存储token开始时间
+          window.localStorage.setItem("tokenStartTime", new Date().getTime());
+          // 成功登录添加token标识，才可进入其他页面
+          window.localStorage.setItem("token", token);
+          // 解析token中的用户信息
+          const decode = jwtDecode(token);
+          // 将用户信息添加到浏览器中
+          window.sessionStorage.setItem("userinfo", JSON.stringify(decode));
+
+          // 用户选择记住账户密码
+          if (this.formData.rememberMe === 1) {
+            window.localStorage.setItem(
+              "userinfo",
+              JSON.stringify({
+                phone: this.formData.phone,
+                password: this.formData.password,
+              })
+            );
+          } else {
+            window.localStorage.removeItem("userinfo");
+          }
           this.$message.success(result.data.message);
           router.push("/");
         } else {
@@ -96,6 +125,19 @@ export default {
         }
       });
     },
+    // 判断用户之前是否进行记住密码的操作
+    getUserInfo() {
+      let userinfo = JSON.parse(localStorage.getItem("userinfo"));
+
+      if (userinfo) {
+        this.formData.phone = userinfo.phone;
+        this.formData.password = userinfo.password;
+        this.formData.rememberMe = 1;
+      }
+    },
+  },
+  mounted() {
+    this.getUserInfo();
   },
 };
 </script>
