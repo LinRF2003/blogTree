@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="nav">
+    <div class="nav" v-if="$route.name != '博客详情'">
       <div class="nav-container">
         <div class="item">
           <div class="logo">
@@ -16,19 +16,35 @@
         </div>
         <div class="user">
           欢迎进入，
-          <div class="username">{{ userinfo.user_name }}</div>
-          <i class="el-icon-arrow-down"></i>
-          <div class="img">
-            <img
-              :src="'http://127.0.0.1:3030/images/' + userinfo.avatar"
-              alt=""
-            />
-          </div>
+          <div></div>
+          <!-- <i class="el-icon-arrow-down"></i> -->
+          <el-dropdown class="username">
+            <span class="el-dropdown-link">
+              {{ userinfo.user_name
+              }}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <router-link to="/my"
+                ><el-dropdown-item>个人信息</el-dropdown-item></router-link
+              >
+
+              <span @click="logout"
+                ><el-dropdown-item>退出</el-dropdown-item></span
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
+          <router-link to="/my" class="img">
+            <img v-if="userinfo.avatar" :src="userinfo.avatar" />
+            <img src="@/assets/default.png" v-else />
+          </router-link>
         </div>
       </div>
     </div>
     <div class="content">
       <router-view></router-view>
+    </div>
+    <div class="footer">
+      <div>©2023 www.blogtree.com All rights reserved.</div>
     </div>
   </div>
 </template>
@@ -47,27 +63,52 @@ export default {
           name: "分类专栏",
           path: "/category",
         },
+        // {
+        //   name: "问答",
+        //   path: "/question",
+        // },
+        // {
+        //   name: "动态",
+        //   path: "/dynamic",
+        // },
         {
-          name: "问答",
-          path: "/question",
-        },
-        {
-          name: "动态",
-          path: "/dynamic",
+          name: "个人中心",
+          path: "/my",
         },
       ],
       // 导航选中路径
       activePath: "",
       // 用户信息
-      userinfo: {},
     };
   },
   methods: {
     // 获取用户信息(页面加载其他配置)
     getUserInfo() {
-      this.userinfo = JSON.parse(window.sessionStorage.getItem("userinfo"));
       // 获取当前页面
+      this.$store.dispatch("getUserInfo");
+     
       this.activePath = this.$route.meta.activePath;
+
+      if (this.$store.state.term) {
+        this.$store.commit("logout", false);
+        // 刷新页面止一次
+        if (location.href.indexOf("#reloaded") == -1) {
+          location.href = location.href + "#reloaded";
+          location.reload();
+        }
+      }
+    },
+
+    // 退出登录
+    logout() {
+      this.$message.success("退出成功");
+     
+      this.$router.push("/login");
+    },
+  },
+  computed: {
+    userinfo() {
+      return this.$store.state.userInfo;
     },
   },
   watch: {
@@ -90,15 +131,15 @@ export default {
     position: fixed;
     top: 0;
     z-index: 901;
-    width: 100%;
+    width: 100vw;
     background: #fff;
-    height: 80px;
+    height: 68px;
     text-align: center;
     box-shadow: 0 2px 6px 0 #ddd;
     .nav-container {
       margin: 0px auto;
       width: 88%;
-      height: 80px;
+      height: 68px;
       display: flex;
 
       justify-content: space-between;
@@ -106,16 +147,17 @@ export default {
         display: flex;
         align-items: center;
         .logo {
+          margin-right: 80px;
           a {
             font-size: 25px;
-            color: #55b555;
+            color: var(--main-color);
             font-weight: bold;
-            padding: 0 20px 0 0;
           }
         }
         .navitem {
           padding: 0 15px;
         }
+        .navitem:hover,
         .active {
           color: #c94646;
         }
@@ -124,18 +166,19 @@ export default {
         display: flex;
         align-items: center;
         .username {
-          color: #55b555;
+          color: var(--main-color);
         }
         .img {
           height: 52px;
           width: 52px;
           margin-left: 8px;
           border-radius: 60px;
-          border: #55b555 1px solid;
+          border: var(--main-color) 1px solid;
+          display: flex;
+          align-items: center;
+          overflow: hidden;
           img {
-            height: 50px;
             width: 50px;
-            border-radius: 60px;
           }
         }
       }
@@ -145,9 +188,20 @@ export default {
   // 内容
   .content {
     margin: 0 auto;
+    padding-top: 78px;
     width: 88%;
-    margin-top: 90px;
-    background: #fff;
+    min-height: calc(100vh - 60px);
+  }
+
+  // 底部
+  .footer {
+    height: 60px;
+    // margin: 30px 0 20px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #939393;
+    line-height: 25px;
   }
 }
 </style>

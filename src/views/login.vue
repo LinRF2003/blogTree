@@ -18,7 +18,9 @@
             @keyup.enter.native="login"
           ></el-input>
         </el-form-item>
-
+        <router-link to="/register" class="register"
+          >还没有账号？立即注册</router-link
+        >
         <el-form-item>
           <el-checkbox v-model="formData.rememberMe" :true-label="1"
             >记住我</el-checkbox
@@ -35,10 +37,6 @@
 </template>
 
 <script>
-// token解析中间件
-import jwtDecode from "jwt-decode";
-// 引入路由
-import router from "@/router";
 export default {
   data() {
     return {
@@ -84,8 +82,6 @@ export default {
           return;
         }
 
-        const contentType = "application/x-www-form-urlencoded";
-
         let result = await this.$request({
           url: "/login",
           method: "post",
@@ -96,15 +92,12 @@ export default {
         });
 
         if (result.data.status === 0) {
+          // this.$store.dispatch("getUserInfo");
           const token = result.data.token;
           // 存储token开始时间
           window.localStorage.setItem("tokenStartTime", new Date().getTime());
           // 成功登录添加token标识，才可进入其他页面
           window.localStorage.setItem("token", token);
-          // 解析token中的用户信息
-          const decode = jwtDecode(token);
-          // 将用户信息添加到浏览器中
-          window.sessionStorage.setItem("userinfo", JSON.stringify(decode));
 
           // 用户选择记住账户密码
           if (this.formData.rememberMe === 1) {
@@ -119,7 +112,8 @@ export default {
             window.localStorage.removeItem("userinfo");
           }
           this.$message.success(result.data.message);
-          router.push("/");
+          this.$store.commit("logout", true); // 首次登录首页需要重新刷新
+          this.$router.push("/");
         } else {
           this.$message.warning(result.data.message);
         }
@@ -162,6 +156,18 @@ export default {
       margin-bottom: 20px;
       text-align: center;
     }
+    .register {
+      color: #333;
+      position: absolute;
+      top: 180px;
+      right: 20px;
+      font-size: 12px;
+    }
   }
+}
+</style>
+<style >
+html {
+  overflow-y: hidden!important;
 }
 </style>

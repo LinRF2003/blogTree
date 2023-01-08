@@ -1,14 +1,65 @@
+// 导航条样式
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgb(239, 239, 239);
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 10px;
+}
+
+:-webkit-scrollbar-thumb:hover {
+    background: #bfbfbf;
+}
+
+:-webkit-scrollbar-corner {
+    background: #bfbfbf;
+}
+
 * {
     box-sizing: border-box;
+}
+
+html {
+    overflow-y: scroll; // 页面不抖动但会在右边留位置
+    // padding-left: calc(100vw - 100%);
 }
 
 body {
     margin: 0;
     padding: 0;
     background: #f4f4f4;
+
+
 }
 
 a {
     color: #494949;
     text-decoration: none;
 }
+
+:root {
+    --main-color: #55b555;
+}
+
+table {
+    border: 1px solid #ccc;
+
+    border-collapse: collapse;
+
+    td,
+    th {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+
+}
+
+// 标题16 文字12 信息14

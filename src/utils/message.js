@@ -1,6 +1,5 @@
+// 页面弹出消息封装
 import { Message } from 'element-ui';
-
-
 
 const message = {
     error: (msg) => {

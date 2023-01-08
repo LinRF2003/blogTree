@@ -1,96 +1,145 @@
 <template>
-  <div>
-    <!-- 注册页 -->
-    <!-- <button @click="a">aaaaaaa</button> -->
-    <!-- <img :src="url" alt="" /> -->
-    <!-- <img src="@/assets/login-bg.jpg" alt="" />
-     -->
-    <el-upload
-      class="avatar-uploader"
-      action="http://localhost:3030/api/imgUpload"
-      :show-file-list="false"
-      :on-success="handleAvatarSuccess"
-      :before-upload="beforeAvatarUpload"
-      name="img"
-      :headers="headers"
-    >
-      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-    </el-upload>
-    <!-- <div>{{ imageUrl }}</div> -->
-    <button @click="add">上传图片</button>
+  <div class="login">
+    <div class="content">
+      <div class="title">注册</div>
+      <el-form ref="formData" :model="formData" :rules="rules">
+        <el-form-item prop="phone">
+          <el-input
+            placeholder="请输入手机号"
+            v-model="formData.phone"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            placeholder="请输入密码"
+            v-model="formData.password"
+            type="password"
+            show-password
+            @keyup.enter.native="register"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="rePassword">
+          <el-input
+            placeholder="再次输入密码"
+            v-model="formData.rePassword"
+            type="password"
+            show-password
+            :validate-event="false"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" :style="{ width: '100%' }" @click="register"
+            >注册</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    // 密码两次输入对比
+    var rePass = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.formData.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
     return {
-      imageUrl: "",
+      // 表单数据
       formData: {
-        imageUrl: "",
+        phone: "",
+        password: "",
+        rePassword: "",
       },
-      headers: { enctype: "multipart/form-data" },
+
+      // 表单验证规程
+      rules: {
+        phone: [
+          {
+            required: true,
+            message: "手机号不能为空",
+          },
+          {
+            pattern: /^1[3456789]\d{9}$/,
+            message: "手机号码不正确",
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: "密码不能为空",
+          },
+          {
+            min: 6,
+            max: 20,
+            message: "密码在6 - 20位之间",
+          },
+        ],
+        rePassword: [
+          {
+            validator: rePass,
+          },
+        ],
+      },
     };
   },
   methods: {
-    async add() {
-      let result = await this.$request({
-        url: "/imgUpload",
-        method: "post",
-        data: { imageUrl: this.imageUrl },
+    // 登录
+    register() {
+      // this.$refs.updateFrom.
+      this.$refs["formData"].validate(async (valid) => {
+        if (!valid) {
+          return;
+        }
+
+        let result = await this.$request({
+          url: "/reguser",
+          method: "post",
+          data: {
+            phone: this.formData.phone,
+            password: this.formData.password,
+          },
+        });
+        console.log(result);
+        if (result.data.status === 0) {
+          this.$message.success(result.data.message);
+          this.$router.push("/login");
+        } else {
+          this.$message.warning(result.data.message);
+        }
       });
-      console.log(result);
-    },
-    handleAvatarSuccess(res, file) {
-      // this.imageUrl = URL.createObjectURL(file.raw);
-      //res这个参数自己打印出来一看便知，在此不做解释
-      console.log(res);
-      //将后端发送的地址赋值到我们需要显示的img中的src动态绑定的参数中
-      this.imageUrl = "http://localhost:3030/" + res.data.path;
-      //将图片地址绑定到我们的form表单数据中 后期存入数据库中
-      this.formData.imageUrl = res.data.path;
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isPNG = file.type === "image/png";
-      const isLt3M = file.size / 1024 / 1024 / 1024 < 3;
-      if (!isJPG && !isPNG) {
-        this.$message.error`在这里插入代码片`(
-          "上传头像图片只能是 JPG 格式或 png 格式!"
-        );
-      }
-      if (!isLt3M) {
-        this.$message.error("上传头像图片大小不能超过 3MB!");
-      }
-      return isJPG | isJPG && isLt3M;
     },
   },
 };
 </script>
 
-<style scoped>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
+<style lang="scss" scoped >
+.login {
+  width: 100%;
+  height: 100vh;
+  background: url("../assets/login-bg.jpg");
+  background-size: cover;
+  .content {
+    position: absolute;
+    right: 200px;
+    top: 150px;
+    width: 350px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px #ddd;
+    .title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  }
 }
 </style>
