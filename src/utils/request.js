@@ -4,7 +4,7 @@ const contentType = 'application/x-www-form-urlencoded'
 const token = window.localStorage.getItem("token") || ''
 const requests = axios.create({
   //基础路径
-  baseURL: "/api",
+  baseURL: "http://127.0.0.1:3030/api",
 
   timeout: 5000,
   // 设置请求头 发送给服务器的内容格式
