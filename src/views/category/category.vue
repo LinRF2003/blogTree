@@ -1,20 +1,21 @@
 <template>
   <div class="category" v-loading="loading">
-    <div v-for="item in categoryList" :key="item.cate_id" class="category-item">
+    <router-link
+      :to="'/categoryDetail/' + item.cate_id"
+      v-for="item in categoryList"
+      :key="item.cate_id"
+      class="category-item"
+    >
       <div class="category-image">
         <img v-if="item.cover" :src="item.cover" />
         <img v-else src="@/assets/default.png" />
       </div>
       <div class="category-info">
-        <router-link
-          :to="'/categoryDetail/' + item.cate_id"
-          class="category-title"
-          >{{ item.cate_name }}</router-link
-        >
+        <div class="category-title">{{ item.cate_name }}</div>
         <div class="category-desc">{{ item.cate_desc }}</div>
         <div class="blog-count">文章数：{{ item.blog_count }}</div>
       </div>
-    </div>
+    </router-link>
   </div>
 </template>
 

@@ -19,6 +19,11 @@
       >
     </div>
     <div class="blog-content" v-if="this.$route.path == '/'">
+      <div class="pattern">
+        <div :class="['size', type ? '' : 'color']" @click="getNew">最新</div>
+        <div class="padding">|</div>
+        <div :class="['size', type ? 'color' : '']" @click="getHot">热榜</div>
+      </div>
       <div v-for="item in blogList" :key="item.blog_id">
         <BlogItem :item="item"></BlogItem>
       </div>
@@ -59,6 +64,7 @@ export default {
       totalCount: 0,
       pageTotal: 0,
       loading: false,
+      type: 0, // 获取数据类型
     };
   },
   methods: {
@@ -71,6 +77,7 @@ export default {
         data: {
           pageNo: this.pageNo,
           pageSize: this.pageSize,
+          type: this.type,
         },
       });
       if (result.status == 200) {
@@ -83,6 +90,20 @@ export default {
         this.loading = false;
       }
       // console.log(result.data.list);
+    },
+    // 获取最新博客
+    getNew() {
+      if (this.type == 1) {
+        this.type = 0;
+        this.getBlogList();
+      }
+    },
+    //获取热门博客
+    getHot() {
+      if (this.type == 0) {
+        this.type = 1;
+        this.getBlogList();
+      }
     },
 
     // handleSizeChange(val) {
@@ -128,6 +149,23 @@ export default {
   }
   .blog-content {
     margin-left: 150px;
+    .pattern {
+      padding: 10px 15px 10px;
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+      .size {
+        cursor: pointer;
+      }
+      .padding {
+        padding: 0 10px;
+        color: #dcdfe6;
+      }
+      .color {
+        color: #007fff;
+      }
+    }
   }
 
   .right {

@@ -2,18 +2,18 @@
   <div class="blog-item">
     <router-link
       :to="`/blogdetail/` + item.blog_id"
-      class="title"
       target="_blank"
       @click.native="addViews"
-      >{{ item.title }}</router-link
     >
-    <div class="main">
-      <div class="cover">
-        <img v-if="item.cover" :src="item.cover" />
-        <img v-else src="@/assets/default.png" />
+      <div class="title">{{ item.title }}</div>
+      <div class="main">
+        <div class="cover">
+          <img v-if="item.cover" :src="item.cover" />
+          <img v-else src="@/assets/default.png" />
+        </div>
+        <div class="abstract">摘要：{{ item.summary }}</div>
       </div>
-      <div class="abstract">摘要：{{ item.summary }}</div>
-    </div>
+    </router-link>
     <div class="bottom">
       <div class="author">
         作者：

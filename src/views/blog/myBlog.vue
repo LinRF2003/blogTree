@@ -71,6 +71,7 @@ export default {
         this.loading = false;
       }
     },
+    // 获取需要请求的页码数
     changePageNo(val) {
       this.pageNo = val;
       this.getBlogList();
